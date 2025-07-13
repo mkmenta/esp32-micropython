@@ -3,6 +3,8 @@ from connect_wifi import connect_wifi
 from simple_web_server import SimpleWebServer, extract_json_from_request
 import machine
 import json
+from ir_remote import IRRemote
+from ir_codes import IR_CODES
 
 # Connect to WiFi using the provided networks
 IFCONFIG = connect_wifi(WIFI_NETWORKS)
@@ -11,6 +13,7 @@ IFCONFIG = connect_wifi(WIFI_NETWORKS)
 sws = SimpleWebServer(IFCONFIG[0])
 
 integrated_led = machine.Pin(2, machine.Pin.OUT)
+ir_remote = IRRemote(13)
 # Initialize the LED state
 integrated_led.value(0)
 IS_ACTIVE = False
@@ -20,11 +23,13 @@ def toggle_onoff(query, request):
         query = extract_json_from_request(request)
     if 'state' in query and query['state'] == 'on':
         integrated_led.value(1)
+        ir_remote.send_ir_signal(IR_CODES['on'])
         global IS_ACTIVE
         IS_ACTIVE = True
         return json.dumps({"is_active": IS_ACTIVE})
     if 'state' in query and query['state'] == 'off':
         integrated_led.off()
+        ir_remote.send_ir_signal(IR_CODES['off'])
         global IS_ACTIVE
         IS_ACTIVE = False
         return json.dumps({"is_active": IS_ACTIVE})
