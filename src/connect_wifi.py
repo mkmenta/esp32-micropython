@@ -2,7 +2,8 @@ import network
 import machine
 import time
 
-def connect_wifi(wifi_networks=None, verbose=True):
+
+def connect_wifi(wifi_networks=tuple(), ap_ssid='ESP32', ap_password=None, verbose=True):
     wlan = network.WLAN()  # Create station interface
     wlan.active(True)      # Activate the interface
     # If already connected, return
@@ -37,7 +38,17 @@ def connect_wifi(wifi_networks=None, verbose=True):
                 print('Network config:', wlan.ipconfig('addr4'))
             return wlan.ipconfig('addr4')
     # If we get here, no connection was established
+    # Start access point mode
     if verbose:
         print("Could not connect to any known WiFi network")
+        print("Starting access point mode...")
+    wlan.active(False)  # Deactivate station mode
+    wlan = network.WLAN(network.AP_IF)  # Create access point interface
+    wlan.active(True)  # Activate access point
+    wlan.config(essid=ap_ssid)
+    if ap_password:
+        wlan.config(password=ap_password)
+    if verbose:
+        print(f"Access point '{ap_ssid}' started with password '{ap_password}'")
+        print('Network config:', wlan.ifconfig())
     return None
-
