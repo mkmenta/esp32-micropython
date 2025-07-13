@@ -25,9 +25,10 @@ class SimpleWebServer:
                 # Convert query to dict
                 query_dict = dict(q.split('=') for q in query.split('&') if '=' in q)
                 # Check if a handler exists for this method and path
-                handler = self._handlers.get((method, path))
+                handler, content_type = self._handlers.get((method, path))
                 if handler:
                     response = handler(query_dict)
+                    response = f"HTTP/1.1 200 OK\r\nContent-Type: {content_type}\r\n\r\n{response}"
                 else:
                     # Return not found response
                     response = "HTTP/1.1 404 Not Found\r\nContent-Type: text/html\r\n\r\n<h1>404 Not Found</h1>"
@@ -41,10 +42,10 @@ class SimpleWebServer:
             except Exception as e:
                 pass
     #
-    def add_handler(self, method, path, handler_function):
+    def add_handler(self, method, path, handler_function, content_type='application/json'):
         """Add a handler for a specific method and path."""
         assert method in ['GET', 'POST', 'PUT', 'DELETE'], "Method must be one of GET, POST, PUT, DELETE"
-        self._handlers[(method, path)] = handler_function
+        self._handlers[(method, path)] = (handler_function, content_type)
 
 
 if __name__ == "__main__":
@@ -53,14 +54,14 @@ if __name__ == "__main__":
     # Example of usage
     def hello_world_handler(query):
         """Example handler for the /hello_world endpoint."""
-        return "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<h1>Hello, World!</h1>"
+        return "<h1>Hello, World!</h1>"
 
     def json_handler(query):
         """Example handler that returns a JSON response."""
         json_data = json.dumps({'received_query': query})
-        return f"HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{json_data}"
+        return json_data
 
     sws = SimpleWebServer(IFCONFIG[0])  # Use the IP address (not mask) from IFCONFIG
-    sws.add_handler('GET', '/hello_world', hello_world_handler)
+    sws.add_handler('GET', '/hello_world', hello_world_handler, content_type='text/html')
     sws.add_handler('GET', '/json', json_handler)
     sws.start()
