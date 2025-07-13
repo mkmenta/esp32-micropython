@@ -1,5 +1,4 @@
 import socket
-import json
 
 
 class SimpleWebServer:
@@ -43,6 +42,8 @@ class SimpleWebServer:
 
 
 if __name__ == "__main__":
+    import json
+
     # Example of usage
     def hello_world_handler(query):
         """Example handler for the /hello_world endpoint."""
