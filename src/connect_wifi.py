@@ -4,6 +4,19 @@ import time
 
 
 def connect_wifi(wifi_networks=tuple(), ap_ssid='ESP32', ap_password=None, verbose=True):
+    """Connect to a known WiFi network or fallback to access point mode.
+    
+    Args:
+        wifi_networks (tuple): List of tuples with (SSID, password) for known networks. Example:
+            ```
+            wifi_networks = (('MySSID', 'MyPassword'), ('OtherSSID', 'OtherPassword'))
+            ```
+        ap_ssid (str): SSID for the access point if no WiFi connection can be established.
+        ap_password (str): Password for the access point, if required.
+        verbose (bool): If True, print connection status messages.
+    Returns:
+        str: (IP address, mask) if connected to WiFi. None if in access point mode.
+    """
     wlan = network.WLAN()  # Create station interface
     wlan.active(True)      # Activate the interface
     # If already connected, return
