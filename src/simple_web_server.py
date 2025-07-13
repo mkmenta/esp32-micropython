@@ -26,7 +26,7 @@ class SimpleWebServer:
                 # Convert query to dict
                 query_dict = dict(q.split('=') for q in query.split('&') if '=' in q)
                 # Check if a handler exists for this method and path
-                handler, content_type = self._handlers.get((method, path))
+                handler, content_type = self._handlers.get((method, path), (None, None))
                 if handler:
                     response = handler(query_dict)
                     response = f"HTTP/1.1 200 OK\r\nContent-Type: {content_type}\r\n\r\n{response}"
