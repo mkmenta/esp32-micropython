@@ -1,4 +1,5 @@
 import socket
+import sys
 
 
 class SimpleWebServer:
@@ -36,7 +37,9 @@ class SimpleWebServer:
                 print(f"### Response:\n{response}\n")
                 conn.send(response.encode())
             except Exception as e:
-                print(f"### Error:\n{e}\n")
+                print("### Error:")
+                sys.print_exception(e)
+                print()
             try:
                 conn.close()
             except Exception as e:
