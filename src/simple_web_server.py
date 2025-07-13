@@ -28,7 +28,7 @@ class SimpleWebServer:
                 # Check if a handler exists for this method and path
                 handler, content_type = self._handlers.get((method, path), (None, None))
                 if handler:
-                    response = handler(query_dict)
+                    response = handler(query_dict, request)
                     response = f"HTTP/1.1 200 OK\r\nContent-Type: {content_type}\r\n\r\n{response}"
                 else:
                     # Return not found response
@@ -55,16 +55,23 @@ if __name__ == "__main__":
     import json
 
     # Example of usage
-    def hello_world_handler(query):
+    def hello_world_handler(query, request):
         """Example handler for the /hello_world endpoint."""
         return "<h1>Hello, World!</h1>"
 
-    def json_handler(query):
+    def json_handler(query, request):
         """Example handler that returns a JSON response."""
-        json_data = json.dumps({'received_query': query})
-        return json_data
+        return json.dumps({'received_query': query})
+    
+    def full_request_handler(query, request):
+        """Example handler that returns the full request as html."""
+        return f"<h1>Full Request</h1><pre>{request}</pre>"
 
     sws = SimpleWebServer(IFCONFIG[0])  # Use the IP address (not mask) from IFCONFIG
     sws.add_handler('GET', '/hello_world', hello_world_handler, content_type='text/html')
     sws.add_handler('GET', '/json', json_handler)
+    sws.add_handler('GET', '/full_request', full_request_handler, content_type='text/html')
+    sws.add_handler('POST', '/full_request', full_request_handler, content_type='text/html')
+    sws.add_handler('PUT', '/full_request', full_request_handler, content_type='text/html')
+    sws.add_handler('DELETE', '/full_request', full_request_handler, content_type='text/html')
     sws.start()
