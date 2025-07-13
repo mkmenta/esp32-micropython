@@ -1,0 +1,11 @@
+
+# You will need to copy this to the Home Assistant configuration file
+# Then find the switch in http://YOUR_HOME_ASSISTANT/config/entities filtering by Rest integrations
+switch:
+  - platform: rest
+    name: "AC Control"
+    method: POST
+    resource: "http://THE_ESP32_IP_IN_YOUR_LOCAL_NETWORK/toggle_onoff"
+    body_on: '{"state": "on"}'
+    body_off: '{"state": "off"}'
+    is_on_template: "{{ value_json.is_active }}"
