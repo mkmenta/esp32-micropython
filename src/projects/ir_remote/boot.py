@@ -51,4 +51,4 @@ sws.add_handler('GET', '/turn_on', turn_on, content_type='application/json')
 sws.add_handler('GET', '/turn_off', turn_off, content_type='application/json')
 
 # Start the web server
-# sws.start()
+sws.start()
