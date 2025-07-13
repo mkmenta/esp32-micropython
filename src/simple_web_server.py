@@ -12,28 +12,34 @@ class SimpleWebServer:
     def start(self):
         print(f"### Starting web server on http://{self.ip}:80\n")
         while True:
-            conn, addr = self.server_socket.accept()
-            print(f"### Client connected from: {addr}\n")
-            request = conn.recv(1024).decode('utf-8')
-            print(f"### Request:\n{request}\n")
-            method, path_args = request.split(' ')[0], request.split(' ')[1]
-            # Extract path args
-            path_args = path_args.split('?')
-            path = path_args[0]
-            query = path_args[1] if len(path_args) > 1 else ''
-            # Convert query to dict
-            query_dict = dict(q.split('=') for q in query.split('&') if '=' in q)
-            # Check if a handler exists for this method and path
-            handler = self._handlers.get((method, path))
-            if handler:
-                response = handler(query_dict)
-            else:
-                # Return not found response
-                response = "HTTP/1.1 404 Not Found\r\nContent-Type: text/html\r\n\r\n<h1>404 Not Found</h1>"
-            # Send response
-            print(f"### Response:\n{response}\n")
-            conn.send(response.encode())
-            conn.close()
+            try:
+                conn, addr = self.server_socket.accept()
+                print(f"### Client connected from: {addr}\n")
+                request = conn.recv(1024).decode('utf-8')
+                print(f"### Request:\n{request}\n")
+                method, path_args = request.split(' ')[0], request.split(' ')[1]
+                # Extract path args
+                path_args = path_args.split('?')
+                path = path_args[0]
+                query = path_args[1] if len(path_args) > 1 else ''
+                # Convert query to dict
+                query_dict = dict(q.split('=') for q in query.split('&') if '=' in q)
+                # Check if a handler exists for this method and path
+                handler = self._handlers.get((method, path))
+                if handler:
+                    response = handler(query_dict)
+                else:
+                    # Return not found response
+                    response = "HTTP/1.1 404 Not Found\r\nContent-Type: text/html\r\n\r\n<h1>404 Not Found</h1>"
+                # Send response
+                print(f"### Response:\n{response}\n")
+                conn.send(response.encode())
+            except Exception as e:
+                print(f"### Error:\n{e}\n")
+            try:
+                conn.close()
+            except Exception as e:
+                pass
     #
     def add_handler(self, method, path, handler_function):
         """Add a handler for a specific method and path."""
