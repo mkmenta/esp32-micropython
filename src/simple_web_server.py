@@ -1,6 +1,26 @@
 import socket
 import sys
+import json
 
+
+def extract_json_from_request(request):
+    """Extract JSON data from the request body."""    
+    # Split request into headers and body
+    parts = request.split('\r\n\r\n', 1)
+    if len(parts) < 2:
+        # Try alternative newline format
+        parts = request.split('\n\n', 1)
+    if len(parts) < 2:
+        # No body found
+        return None
+    body = parts[1].strip()
+    if not body:
+        return None
+    try:
+        return json.loads(body)
+    except ValueError:
+        # Not valid JSON
+        return None
 
 class SimpleWebServer:
     def __init__(self, ip):
