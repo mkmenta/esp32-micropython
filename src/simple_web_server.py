@@ -10,12 +10,12 @@ class SimpleWebServer:
         self._handlers = {}
     #
     def start(self):
-        print(f"Starting web server on http://{self.ip}:80")
+        print(f"### Starting web server on http://{self.ip}:80\n")
         while True:
             conn, addr = self.server_socket.accept()
-            print("Client connected from:", addr)
+            print(f"### Client connected from: {addr}\n")
             request = conn.recv(1024).decode('utf-8')
-            print("Request:", request)
+            print(f"### Request:\n{request}\n")
             method, path_args = request.split(' ')[0], request.split(' ')[1]
             # Extract path args
             path_args = path_args.split('?')
@@ -31,7 +31,7 @@ class SimpleWebServer:
                 # Return not found response
                 response = "HTTP/1.1 404 Not Found\r\nContent-Type: text/html\r\n\r\n<h1>404 Not Found</h1>"
             # Send response
-            print("Response:", response)
+            print(f"### Response:\n{response}\n")
             conn.send(response.encode())
             conn.close()
     #
