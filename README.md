@@ -1,1 +1,1 @@
-# esp32-micropython
+# Useful libraries for ESP32 with Micropython
